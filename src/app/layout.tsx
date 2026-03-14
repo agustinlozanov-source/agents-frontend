@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import "../styles/globals.css";
 import { Sidebar } from "@/components/Sidebar";
 import { Header } from "@/components/Header";
+import { ExecuteAgentButton } from "@/components/ExecuteAgentButton";
 
 export const metadata: Metadata = {
   title: "Agentes Hub - Sistema de Agentes Autónomos",
@@ -31,6 +32,9 @@ export default function RootLayout({
               </main>
             </div>
           </div>
+
+          {/* Botón flotante para ejecutar agentes */}
+          <ExecuteAgentButton />
         </ThemeProvider>
       </body>
     </html>
