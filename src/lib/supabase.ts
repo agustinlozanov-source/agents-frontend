@@ -1,0 +1,76 @@
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// Tipos de la base de datos
+export type Proyecto = {
+  id: string
+  nombre: string
+  cliente: string | null
+  tipo: 'landing' | 'app' | 'ecommerce' | 'custom' | null
+  status: 'idea' | 'investigacion' | 'desarrollo' | 'completado' | 'pausado'
+  carpeta_vps: string | null
+  repo_github: string | null
+  url_produccion: string | null
+  created_at: string
+  metadata: Record<string, any> | null
+}
+
+export type AgenteTarea = {
+  id: string
+  proyecto_id: string | null
+  agente_tipo: 'investigacion' | 'programacion' | 'automatizacion' | 'auditor'
+  input: string
+  output: string | null
+  status: 'pendiente' | 'procesando' | 'completado' | 'error'
+  tiempo_ejecucion: string | null
+  archivos_generados: string[] | null
+  created_at: string
+}
+
+export type Cliente = {
+  id: string
+  nombre: string
+  email: string | null
+  empresa: string | null
+  telefono: string | null
+  created_at: string
+  metadata: Record<string, any> | null
+}
+
+export type AgenteSkill = {
+  id: string
+  agente_tipo: 'investigacion' | 'programacion' | 'automatizacion' | 'auditor'
+  nombre: string
+  prompt: string
+  version: number
+  activo: boolean
+  metricas: Record<string, any> | null
+  created_at: string
+}
+
+export type Log = {
+  id: string
+  nivel: 'info' | 'warning' | 'error'
+  fuente: 'frontend' | 'railway' | 'vps'
+  mensaje: string
+  metadata: Record<string, any> | null
+  created_at: string
+}
+
+// Helper para logs
+export const logToSupabase = async (
+  nivel: Log['nivel'],
+  fuente: Log['fuente'],
+  mensaje: string,
+  metadata?: Record<string, any>
+) => {
+  const { error } = await supabase
+    .from('logs')
+    .insert({ nivel, fuente, mensaje, metadata })
+  
+  if (error) console.error('Error logging to Supabase:', error)
+}

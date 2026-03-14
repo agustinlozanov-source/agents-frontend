@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light mode */
+  --bg: #F5F5F0;
+  --surface: #FFFFFF;
+  --border: #E5E5E0;
+  --text-primary: #1A1A1A;
+  --text-secondary: #6B6B6B;
+  --text-tertiary: #9B9B9B;
+  --accent: #C47E5A;
+}
+
+.dark {
+  /* Dark mode */
+  --bg: #1A1A1A;
+  --surface: #2D2D2D;
+  --border: #3D3D3D;
+  --text-primary: #E5E5E0;
+  --text-secondary: #ABABAB;
+  --text-tertiary: #7B7B7B;
+  --accent: #D4956C;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  background-color: var(--bg);
+  color: var(--text-primary);
+}
+
+body {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* Animaciones suaves */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Focus visible para accesibilidad */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Utilidades personalizadas */
+@layer components {
+  .card {
+    @apply bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-lg p-6 shadow-sm;
+  }
+
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary;
+  }
+
+  .btn-primary {
+    @apply bg-accent-primary text-white hover:bg-accent-secondary;
+  }
+
+  .btn-secondary {
+    @apply bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border hover:border-accent-primary dark:hover:border-accent-primary;
+  }
+
+  .input {
+    @apply w-full px-3 py-2 bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent-primary;
+  }
+}
