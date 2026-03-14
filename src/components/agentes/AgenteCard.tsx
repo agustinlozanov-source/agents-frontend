@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { type AgenteSkill } from "@/lib/supabase";
+import { api } from "@/lib/api";
 import { Edit2, Save, X, TrendingUp } from "lucide-react";
 
 interface AgenteCardProps {
@@ -22,13 +24,23 @@ interface AgenteCardProps {
 }
 
 export function AgenteCard({ agente, skills, metrics }: AgenteCardProps) {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [editedPrompt, setEditedPrompt] = useState(skills[0]?.prompt || "");
 
   const handleSave = async () => {
-    // TODO: Llamar API para actualizar
-    console.log("Saving prompt:", editedPrompt);
-    setIsEditing(false);
+    if (!skills[0]?.id) return;
+    setIsSaving(true);
+    try {
+      await api.updateAgentSkill(skills[0].id, editedPrompt);
+      setIsEditing(false);
+      router.refresh();
+    } catch (error) {
+      console.error("Error saving prompt:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -131,10 +143,11 @@ export function AgenteCard({ agente, skills, metrics }: AgenteCardProps) {
             />
             <button
               onClick={handleSave}
-              className="btn btn-primary w-full flex items-center justify-center gap-2"
+              disabled={isSaving}
+              className="btn btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <Save className="w-4 h-4" />
-              Guardar Cambios
+              {isSaving ? "Guardando..." : "Guardar Cambios"}
             </button>
           </div>
         ) : (

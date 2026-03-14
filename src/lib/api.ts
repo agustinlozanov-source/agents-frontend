@@ -44,5 +44,14 @@ export const api = {
       body: JSON.stringify(data)
     });
     return res.json();
+  },
+
+  async updateAgentSkill(id: string, prompt: string) {
+    const res = await fetch(`${API_URL}/api/agentes/skills/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+    return res.json();
   }
 };
