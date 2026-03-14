@@ -2,15 +2,15 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Send, Terminal } from "lucide-react";
+import { api } from "@/lib/api";
 
 export function VPSTerminal() {
   const [input, setInput] = useState("");
-  const [history, setHistory] = useState<
-    Array<{ type: "command" | "output"; text: string }>
-  >([
+  const [history, setHistory] = useState<Array<{ type: "command" | "output"; text: string }>>([
     { type: "output", text: "Conectado a VPS (root@178.156.188.72)" },
-    { type: "output", text: "Escribe 'help' para ver comandos disponibles" },
+    { type: "output", text: "Escribe un comando o 'help' para ayuda" },
   ]);
+  const [isExecuting, setIsExecuting] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -19,37 +19,40 @@ export function VPSTerminal() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isExecuting) return;
 
     // Agregar comando al historial
     setHistory((prev) => [...prev, { type: "command", text: input }]);
+    setIsExecuting(true);
 
-    // TODO: Enviar comando real al backend → VPS
-    // Por ahora simular respuesta
-    const simulatedOutput = getSimulatedOutput(input);
-    setTimeout(() => {
-      setHistory((prev) => [...prev, { type: "output", text: simulatedOutput }]);
-    }, 300);
+    try {
+      // Ejecutar comando en el backend
+      const result = await api.executeVPSCommand(input);
 
-    setInput("");
-  };
-
-  const getSimulatedOutput = (command: string): string => {
-    if (command === "help") {
-      return `Comandos disponibles:
-  pm2 status        - Ver estado de procesos
-  pm2 logs          - Ver logs del bot
-  ls /root/agente_ia - Listar archivos
-  cat [archivo]     - Ver contenido`;
+      // Agregar respuesta
+      if (result.success) {
+        setHistory((prev) => [
+          ...prev,
+          { type: "output", text: result.stdout || "Comando ejecutado" },
+        ]);
+      } else {
+        setHistory((prev) => [
+          ...prev,
+          { 
+            type: "output", 
+            text: result.stderr || result.error || "Error ejecutando comando" 
+          },
+        ]);
+      }
+    } catch (error: any) {
+      setHistory((prev) => [
+        ...prev,
+        { type: "output", text: `Error: ${error.message}` },
+      ]);
+    } finally {
+      setIsExecuting(false);
+      setInput("");
     }
-    if (command === "pm2 status") {
-      return `┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┐
-│ id │ name               │ mode     │ ↺    │ status    │ cpu      │
-├────┼────────────────────┼──────────┼──────┼───────────┼──────────┤
-│ 0  │ agente-telegram    │ fork     │ 0    │ online    │ 0%       │
-└────┴────────────────────┴──────────┴──────┴───────────┴──────────┘`;
-    }
-    return `bash: ${command}: comando no implementado aún`;
   };
 
   return (
@@ -70,6 +73,11 @@ export function VPSTerminal() {
             )}
           </div>
         ))}
+        {isExecuting && (
+          <div className="text-accent-warning animate-pulse">
+            Ejecutando...
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
 
@@ -82,16 +90,21 @@ export function VPSTerminal() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Escribe un comando..."
+            disabled={isExecuting}
             className="input pl-10"
           />
         </div>
-        <button type="submit" className="btn btn-primary">
+        <button 
+          type="submit" 
+          className="btn btn-primary"
+          disabled={isExecuting}
+        >
           <Send className="w-4 h-4" />
         </button>
       </form>
 
       <p className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
-        ⚠️ Los comandos se ejecutan directamente en el VPS. Usa con precaución.
+        ⚠️ Comandos permitidos: pm2 status, pm2 logs, ls, cat, pwd
       </p>
     </div>
   );
