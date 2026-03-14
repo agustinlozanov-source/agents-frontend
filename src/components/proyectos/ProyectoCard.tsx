@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { type Proyecto } from "@/lib/supabase";
 import { statusLabels, tipoLabels, formatRelativeTime } from "@/lib/utils";
