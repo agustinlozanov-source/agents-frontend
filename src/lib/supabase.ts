@@ -5,6 +5,16 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+// Cliente admin con service key — solo usar en Server Components / API routes
+// Bypasea RLS, nunca exponer al cliente
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY!
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  },
+})
+
 // Tipos de la base de datos
 export type Proyecto = {
   id: string

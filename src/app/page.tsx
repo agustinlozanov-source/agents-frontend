@@ -1,4 +1,4 @@
-import { supabase, type Proyecto, type AgenteTarea } from "@/lib/supabase";
+import { supabase, supabaseAdmin, type Proyecto, type AgenteTarea } from "@/lib/supabase";
 import {
   FolderKanban,
   Bot,
@@ -21,7 +21,7 @@ async function getDashboardData() {
     .limit(5);
 
   // Tareas de agentes
-  const { data: tareas, error: tareasError } = await supabase
+  const { data: tareas, error: tareasError } = await supabaseAdmin
     .from("agente_tareas")
     .select("*")
     .order("created_at", { ascending: false })
@@ -32,12 +32,12 @@ async function getDashboardData() {
     .from("proyectos")
     .select("*", { count: "exact", head: true });
 
-  const { count: tareasActivas } = await supabase
+  const { count: tareasActivas } = await supabaseAdmin
     .from("agente_tareas")
     .select("*", { count: "exact", head: true })
     .eq("status", "procesando");
 
-  const { count: tareasCompletadas } = await supabase
+  const { count: tareasCompletadas } = await supabaseAdmin
     .from("agente_tareas")
     .select("*", { count: "exact", head: true })
     .eq("status", "completado");
