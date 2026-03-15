@@ -12,6 +12,8 @@ import { ProyectosList } from "@/components/ProyectosList";
 import { AgentesStatus } from "@/components/AgentesStatus";
 import { ActivityFeed } from "@/components/ActivityFeed";
 
+export const revalidate = 0;
+
 async function getDashboardData() {
   // Proyectos
   const { data: proyectos, error: proyectosError } = await supabase
