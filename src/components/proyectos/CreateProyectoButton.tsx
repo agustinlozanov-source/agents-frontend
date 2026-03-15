@@ -22,7 +22,7 @@ export function CreateProyectoButton() {
 
     try {
       await api.createProyecto(formData);
-      toast.success("Proyecto creado");
+      toast.success("Proyecto creado", { duration: 5000 });
 
       // Reset y cerrar
       setFormData({
@@ -38,7 +38,7 @@ export function CreateProyectoButton() {
       window.location.reload();
     } catch (error) {
       console.error("Error creating project:", error);
-      toast.error("Error al crear proyecto");
+      toast.error("Error al crear proyecto", { duration: 5000 });
     } finally {
       setIsSubmitting(false);
     }

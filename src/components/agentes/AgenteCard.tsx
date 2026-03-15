@@ -35,7 +35,7 @@ export function AgenteCard({ agente, skills, metrics }: AgenteCardProps) {
     setIsSaving(true);
     try {
       await api.updateAgentSkill(skills[0].id, editedPrompt);
-      toast.success("Prompt actualizado");
+      toast.success("Prompt actualizado", { duration: 5000 });
       setIsEditing(false);
       router.refresh();
     } catch (error) {

@@ -25,7 +25,7 @@ export function CreateClienteButton() {
         .insert(formData);
 
       if (error) throw error;
-      toast.success("Cliente creado");
+      toast.success("Cliente creado", { duration: 5000 });
 
       // Reset y cerrar
       setFormData({
@@ -40,7 +40,7 @@ export function CreateClienteButton() {
       window.location.reload();
     } catch (error) {
       console.error("Error creating cliente:", error);
-      toast.error("Error al crear cliente");
+      toast.error("Error al crear cliente", { duration: 5000 });
     } finally {
       setIsSubmitting(false);
     }
