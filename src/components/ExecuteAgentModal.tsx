@@ -9,6 +9,7 @@ interface ExecuteAgentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  proyectoId?: string;
 }
 
 const agentTypes = [
@@ -18,7 +19,7 @@ const agentTypes = [
   { id: "auditor", name: "Auditor", icon: "📊", description: "Auditoría y reportes del proyecto" },
 ];
 
-export function ExecuteAgentModal({ isOpen, onClose, onSuccess }: ExecuteAgentModalProps) {
+export function ExecuteAgentModal({ isOpen, onClose, onSuccess, proyectoId }: ExecuteAgentModalProps) {
   const [selectedAgent, setSelectedAgent] = useState<string>("");
   const [input, setInput] = useState("");
   const [isExecuting, setIsExecuting] = useState(false);
@@ -36,7 +37,7 @@ export function ExecuteAgentModal({ isOpen, onClose, onSuccess }: ExecuteAgentMo
 
     try {
       await toast.promise(
-        api.executeAgent(selectedAgent, input),
+        api.executeAgent(selectedAgent, input, proyectoId),
         {
           loading: `Ejecutando agente ${agentName}...`,
           success: `Agente ${agentName} está trabajando en ello`,
@@ -72,7 +73,9 @@ export function ExecuteAgentModal({ isOpen, onClose, onSuccess }: ExecuteAgentMo
                 Ejecutar Agente
               </h2>
               <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary">
-                Asigna una tarea a uno de tus agentes autónomos
+                {proyectoId
+                  ? "La tarea quedará vinculada a este proyecto"
+                  : "Asigna una tarea a uno de tus agentes autónomos"}
               </p>
             </div>
           </div>
