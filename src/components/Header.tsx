@@ -15,15 +15,12 @@ export function Header() {
 
   if (!mounted) {
     return (
-      <header className="h-16 border-b border-light-border dark:border-dark-border bg-light-surface dark:bg-dark-surface" />
+      <header className="h-14 bg-transparent" />
     );
   }
 
   return (
-    <header className="h-16 border-b border-light-border dark:border-dark-border bg-light-surface dark:bg-dark-surface flex items-center justify-between px-6">
-      {/* Breadcrumbs o título pueden ir aquí */}
-      <div className="flex-1" />
-
+    <header className="h-14 bg-transparent flex items-center justify-end px-6">
       {/* Actions */}
       <div className="flex items-center gap-2">
         {/* Notificaciones */}
