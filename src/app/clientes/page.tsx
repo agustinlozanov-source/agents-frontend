@@ -1,33 +1,44 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { supabase, type Cliente } from "@/lib/supabase";
-import { Users, Plus, Mail, Building, Phone } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { Users, Plus, Building } from "lucide-react";
 import { CreateClienteButton } from "@/components/clientes/CreateClienteButton";
 import { ClienteCard } from "@/components/clientes/ClienteCard";
 
-async function getClientes() {
-  const { data: clientes, error } = await supabase
-    .from("clientes")
-    .select(`
-      *,
-      proyectos:proyectos(count)
-    `)
-    .order("created_at", { ascending: false });
+export default function ClientesPage() {
+  const { user } = useAuth();
+  const [clientes, setClientes] = useState<(Cliente & { proyectos: { count: number }[] })[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (error) {
-    console.error("Error fetching clientes:", error);
-    return [];
+  useEffect(() => {
+    if (user) loadClientes();
+  }, [user]);
+
+  async function loadClientes() {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("clientes")
+      .select(`*, proyectos:proyectos(count)`)
+      .order("created_at", { ascending: false });
+    if (error) console.error("Error fetching clientes:", error);
+    setClientes((data as (Cliente & { proyectos: { count: number }[] })[]) || []);
+    setLoading(false);
   }
 
-  return clientes as (Cliente & { proyectos: { count: number }[] })[];
-}
-
-export default async function ClientesPage() {
-  const clientes = await getClientes();
-
-  // Stats
   const totalProyectos = clientes.reduce(
     (sum, c) => sum + (c.proyectos?.[0]?.count || 0),
     0
   );
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -47,7 +58,7 @@ export default async function ClientesPage() {
           </div>
         </div>
 
-        <CreateClienteButton />
+        <CreateClienteButton onCreated={loadClientes} />
       </div>
 
       {/* Stats */}
@@ -105,7 +116,7 @@ export default async function ClientesPage() {
           <p className="text-light-text-secondary dark:text-dark-text-secondary mb-4">
             Agrega tu primer cliente para empezar
           </p>
-          <CreateClienteButton />
+          <CreateClienteButton onCreated={loadClientes} />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

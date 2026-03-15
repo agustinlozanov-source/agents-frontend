@@ -1,33 +1,47 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { supabase, type Proyecto } from "@/lib/supabase";
-import { FolderKanban, Plus, Filter, Search } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { FolderKanban } from "lucide-react";
 import { ProyectoCard } from "@/components/proyectos/ProyectoCard";
 import { CreateProyectoButton } from "@/components/proyectos/CreateProyectoButton";
 import { ProyectosFilters } from "@/components/proyectos/ProyectosFilters";
 
-async function getProyectos() {
-  const { data: proyectos, error } = await supabase
-    .from("proyectos")
-    .select("*")
-    .order("created_at", { ascending: false });
+export default function ProyectosPage() {
+  const { user } = useAuth();
+  const [proyectos, setProyectos] = useState<Proyecto[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (error) {
-    console.error("Error fetching proyectos:", error);
-    return [];
+  useEffect(() => {
+    if (user) loadProyectos();
+  }, [user]);
+
+  async function loadProyectos() {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("proyectos")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) console.error("Error fetching proyectos:", error);
+    setProyectos((data as Proyecto[]) || []);
+    setLoading(false);
   }
 
-  return proyectos as Proyecto[];
-}
-
-export default async function ProyectosPage() {
-  const proyectos = await getProyectos();
-
-  // Stats
   const stats = {
     total: proyectos.length,
     activos: proyectos.filter(p => p.status === "desarrollo").length,
     completados: proyectos.filter(p => p.status === "completado").length,
     pausados: proyectos.filter(p => p.status === "pausado").length,
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -47,7 +61,7 @@ export default async function ProyectosPage() {
           </div>
         </div>
 
-        <CreateProyectoButton />
+        <CreateProyectoButton onCreated={loadProyectos} />
       </div>
 
       {/* Stats Cards */}
@@ -99,7 +113,7 @@ export default async function ProyectosPage() {
           <p className="text-light-text-secondary dark:text-dark-text-secondary mb-4">
             Crea tu primer proyecto para empezar
           </p>
-          <CreateProyectoButton />
+          <CreateProyectoButton onCreated={loadProyectos} />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

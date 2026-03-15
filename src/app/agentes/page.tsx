@@ -1,4 +1,8 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { supabase, type AgenteSkill, type AgenteTarea } from "@/lib/supabase";
+import { useAuth } from "@/context/AuthContext";
 import { Bot, Activity, CheckCircle, AlertCircle } from "lucide-react";
 import { AgenteCard } from "@/components/agentes/AgenteCard";
 import { AgentesMetrics } from "@/components/agentes/AgentesMetrics";
@@ -11,47 +15,51 @@ const agenteTypes = [
   { id: "auditor", name: "Auditor", icon: "📊", color: "bg-orange-500" },
 ];
 
-async function getAgentesData() {
-  // Skills
-  const { data: skills } = await supabase
-    .from("agente_skills")
-    .select("*")
-    .order("agente_tipo");
+export default function AgentesPage() {
+  const { user } = useAuth();
+  const [skills, setSkills] = useState<AgenteSkill[]>([]);
+  const [tareas, setTareas] = useState<AgenteTarea[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Tareas recientes
-  const { data: tareas } = await supabase
-    .from("agente_tareas")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(100);
+  useEffect(() => {
+    if (user) loadData();
+  }, [user]);
 
-  return {
-    skills: skills as AgenteSkill[] || [],
-    tareas: tareas as AgenteTarea[] || [],
-  };
-}
+  async function loadData() {
+    setLoading(true);
+    const [{ data: skillsData }, { data: tareasData }] = await Promise.all([
+      supabase.from("agente_skills").select("*").order("agente_tipo"),
+      supabase.from("agente_tareas").select("*").order("created_at", { ascending: false }).limit(100),
+    ]);
+    setSkills((skillsData as AgenteSkill[]) || []);
+    setTareas((tareasData as AgenteTarea[]) || []);
+    setLoading(false);
+  }
 
-export default async function AgentesPage() {
-  const { skills, tareas } = await getAgentesData();
-
-  // Calcular métricas por agente
   const metrics = agenteTypes.map((agente) => {
     const agenteTareas = tareas.filter(t => t.agente_tipo === agente.id);
     const completadas = agenteTareas.filter(t => t.status === "completado").length;
     const errores = agenteTareas.filter(t => t.status === "error").length;
     const procesando = agenteTareas.filter(t => t.status === "procesando").length;
-
     return {
       ...agente,
       total: agenteTareas.length,
       completadas,
       errores,
       procesando,
-      tasaExito: agenteTareas.length > 0 
-        ? Math.round((completadas / agenteTareas.length) * 100) 
+      tasaExito: agenteTareas.length > 0
+        ? Math.round((completadas / agenteTareas.length) * 100)
         : 0,
     };
   });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">

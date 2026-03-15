@@ -6,7 +6,7 @@ import { Plus, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 
-export function CreateProyectoButton() {
+export function CreateProyectoButton({ onCreated }: { onCreated?: () => void } = {}) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,8 +38,7 @@ export function CreateProyectoButton() {
       });
       setIsOpen(false);
 
-      // Refresh data without killing React
-      setTimeout(() => router.refresh(), 1000);
+      onCreated?.();
     } catch (error) {
       console.error("Error creating project:", error);
       toast.error("Error al crear proyecto", { duration: 5000 });

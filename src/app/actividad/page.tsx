@@ -1,21 +1,39 @@
-import { supabaseAdmin, type AgenteTarea } from "@/lib/supabase";
+"use client";
+
+import { useEffect, useState } from "react";
+import { supabase, type AgenteTarea } from "@/lib/supabase";
+import { useAuth } from "@/context/AuthContext";
 import { Activity } from "lucide-react";
 import { agenteLabels } from "@/lib/utils";
 import { RelativeTime } from "@/components/RelativeTime";
 
-export const revalidate = 0;
+export default function ActividadPage() {
+  const { user } = useAuth();
+  const [tareas, setTareas] = useState<AgenteTarea[]>([]);
+  const [loading, setLoading] = useState(true);
 
-async function getTareas() {
-  const { data } = await supabaseAdmin
-    .from("agente_tareas")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(50);
-  return (data as AgenteTarea[]) || [];
-}
+  useEffect(() => {
+    if (user) loadTareas();
+  }, [user]);
 
-export default async function ActividadPage() {
-  const tareas = await getTareas();
+  async function loadTareas() {
+    setLoading(true);
+    const { data } = await supabase
+      .from("agente_tareas")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    setTareas((data as AgenteTarea[]) || []);
+    setLoading(false);
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">

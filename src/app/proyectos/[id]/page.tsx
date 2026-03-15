@@ -1,7 +1,9 @@
-import { supabase, supabaseAdmin, type Proyecto, type AgenteTarea } from "@/lib/supabase";
-import { notFound } from "next/navigation";
+"use client";
 
-export const revalidate = 0;
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { supabase, type Proyecto, type AgenteTarea } from "@/lib/supabase";
+import { useAuth } from "@/context/AuthContext";
 import { 
   ArrowLeft, 
   ExternalLink, 
@@ -17,41 +19,71 @@ import { RelativeTime } from "@/components/RelativeTime";
 import { ProyectoTareas } from "@/components/proyectos/ProyectoTareas";
 import { ProyectoActions } from "@/components/proyectos/ProyectoActions";
 
-async function getProyecto(id: string) {
-  const { data: proyecto, error } = await supabase
-    .from("proyectos")
-    .select("*")
-    .eq("id", id)
-    .single();
+export default function ProyectoDetailPage() {
+  const { user } = useAuth();
+  const params = useParams();
+  const id = params.id as string;
 
-  if (error || !proyecto) {
-    return null;
+  const [proyecto, setProyecto] = useState<Proyecto | null>(null);
+  const [tareas, setTareas] = useState<AgenteTarea[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    if (user && id) loadProyecto();
+  }, [user, id]);
+
+  async function loadProyecto() {
+    setLoading(true);
+    const { data: proyectoData, error } = await supabase
+      .from("proyectos")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !proyectoData) {
+      setNotFound(true);
+      setLoading(false);
+      return;
+    }
+
+    const { data: tareasData } = await supabase
+      .from("agente_tareas")
+      .select("*")
+      .eq("proyecto_id", id)
+      .order("created_at", { ascending: false });
+
+    setProyecto(proyectoData as Proyecto);
+    setTareas((tareasData as AgenteTarea[]) || []);
+    setLoading(false);
   }
 
-  const { data: tareas } = await supabaseAdmin
-    .from("agente_tareas")
-    .select("*")
-    .eq("proyecto_id", id)
-    .order("created_at", { ascending: false });
-
-  return {
-    proyecto: proyecto as Proyecto,
-    tareas: tareas as AgenteTarea[] || [],
-  };
-}
-
-export default async function ProyectoDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const data = await getProyecto(params.id);
-
-  if (!data) {
-    notFound();
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-primary" />
+      </div>
+    );
   }
 
-  const { proyecto, tareas } = data;
+  if (notFound || !proyecto) {
+    return (
+      <div className="space-y-6">
+        <Link
+          href="/proyectos"
+          className="inline-flex items-center gap-2 text-sm text-light-text-secondary dark:text-dark-text-secondary hover:text-accent-primary transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Volver a Proyectos
+        </Link>
+        <div className="card text-center py-12">
+          <p className="text-light-text-secondary dark:text-dark-text-secondary">
+            Proyecto no encontrado
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // Stats de tareas
   const stats = {

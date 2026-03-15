@@ -6,7 +6,7 @@ import { Plus, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 
-export function CreateClienteButton() {
+export function CreateClienteButton({ onCreated }: { onCreated?: () => void } = {}) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,8 +34,7 @@ export function CreateClienteButton() {
       });
       setIsOpen(false);
 
-      // Refresh data without killing React
-      setTimeout(() => router.refresh(), 1000);
+      onCreated?.();
     } catch (error) {
       console.error("Error creating cliente:", error);
       toast.error("Error al crear cliente", { duration: 5000 });

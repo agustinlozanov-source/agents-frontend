@@ -1,62 +1,62 @@
-import { supabase, supabaseAdmin, type Proyecto, type AgenteTarea } from "@/lib/supabase";
+"use client";
+
+import { useEffect, useState } from "react";
+import { supabase, type Proyecto, type AgenteTarea } from "@/lib/supabase";
+import { useAuth } from "@/context/AuthContext";
 import {
   FolderKanban,
   Bot,
   CheckCircle,
   Clock,
-  TrendingUp,
-  Activity,
 } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
 import { ProyectosList } from "@/components/ProyectosList";
 import { AgentesStatus } from "@/components/AgentesStatus";
 import { ActivityFeed } from "@/components/ActivityFeed";
 
-export const revalidate = 0;
+export default function DashboardPage() {
+  const { user } = useAuth();
+  const [proyectos, setProyectos] = useState<Proyecto[]>([]);
+  const [tareas, setTareas] = useState<AgenteTarea[]>([]);
+  const [stats, setStats] = useState({ totalProyectos: 0, tareasActivas: 0, tareasCompletadas: 0 });
+  const [loading, setLoading] = useState(true);
 
-async function getDashboardData() {
-  // Proyectos
-  const { data: proyectos, error: proyectosError } = await supabase
-    .from("proyectos")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(5);
+  useEffect(() => {
+    if (user) loadDashboard();
+  }, [user]);
 
-  // Tareas de agentes
-  const { data: tareas, error: tareasError } = await supabaseAdmin
-    .from("agente_tareas")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(10);
-
-  // Stats
-  const { count: totalProyectos } = await supabase
-    .from("proyectos")
-    .select("*", { count: "exact", head: true });
-
-  const { count: tareasActivas } = await supabaseAdmin
-    .from("agente_tareas")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "procesando");
-
-  const { count: tareasCompletadas } = await supabaseAdmin
-    .from("agente_tareas")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "completado");
-
-  return {
-    proyectos: proyectos as Proyecto[] || [],
-    tareas: tareas as AgenteTarea[] || [],
-    stats: {
+  async function loadDashboard() {
+    setLoading(true);
+    const [
+      { data: proyectosData },
+      { data: tareasData },
+      { count: totalProyectos },
+      { count: tareasActivas },
+      { count: tareasCompletadas },
+    ] = await Promise.all([
+      supabase.from("proyectos").select("*").order("created_at", { ascending: false }).limit(5),
+      supabase.from("agente_tareas").select("*").order("created_at", { ascending: false }).limit(10),
+      supabase.from("proyectos").select("*", { count: "exact", head: true }),
+      supabase.from("agente_tareas").select("*", { count: "exact", head: true }).eq("status", "procesando"),
+      supabase.from("agente_tareas").select("*", { count: "exact", head: true }).eq("status", "completado"),
+    ]);
+    setProyectos((proyectosData as Proyecto[]) || []);
+    setTareas((tareasData as AgenteTarea[]) || []);
+    setStats({
       totalProyectos: totalProyectos || 0,
       tareasActivas: tareasActivas || 0,
       tareasCompletadas: tareasCompletadas || 0,
-    },
-  };
-}
+    });
+    setLoading(false);
+  }
 
-export default async function DashboardPage() {
-  const { proyectos, tareas, stats } = await getDashboardData();
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
