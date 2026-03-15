@@ -67,7 +67,7 @@ export function ActivityFeed({ tareas }: ActivityFeedProps) {
                     <span className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
                       •
                     </span>
-                    <span className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
+                    <span suppressHydrationWarning className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
                       {formatRelativeTime(tarea.created_at)}
                     </span>
                   </div>

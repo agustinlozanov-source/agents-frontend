@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Bot } from "lucide-react";
 import { ExecuteAgentModal } from "./ExecuteAgentModal";
 
 export function ExecuteAgentButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <>
@@ -23,8 +25,7 @@ export function ExecuteAgentButton() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={() => {
-          // Opcional: Refrescar datos del dashboard
-          window.location.reload();
+          setTimeout(() => router.refresh(), 500);
         }}
       />
     </>

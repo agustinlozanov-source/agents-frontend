@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className="antialiased">
+      <body className="antialiased" suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <div className="flex h-screen bg-light-bg dark:bg-dark-bg">
             {/* Sidebar */}
