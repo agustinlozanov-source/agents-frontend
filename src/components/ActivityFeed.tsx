@@ -75,20 +75,17 @@ export function ActivityFeed({ tareas }: ActivityFeedProps) {
               </>
             );
 
-            const itemClass = "flex gap-3 pb-3 border-b border-light-border dark:border-dark-border last:border-0 last:pb-0 rounded-md transition-colors";
+            const itemClass = "flex gap-3 pb-3 border-b border-light-border dark:border-dark-border last:border-0 last:pb-0 rounded-md transition-colors hover:bg-light-bg dark:hover:bg-dark-bg -mx-2 px-2 cursor-pointer";
+            const href = tarea.proyecto_id ? `/proyectos/${tarea.proyecto_id}` : `/agentes`;
 
-            return tarea.proyecto_id ? (
+            return (
               <Link
                 key={tarea.id}
-                href={`/proyectos/${tarea.proyecto_id}`}
-                className={itemClass + " hover:bg-light-bg dark:hover:bg-dark-bg -mx-2 px-2 cursor-pointer"}
+                href={href}
+                className={itemClass}
               >
                 {inner}
               </Link>
-            ) : (
-              <div key={tarea.id} className={itemClass}>
-                {inner}
-              </div>
             );
           })
         )}

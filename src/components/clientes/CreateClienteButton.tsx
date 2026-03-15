@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
 export function CreateClienteButton() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,8 +38,8 @@ export function CreateClienteButton() {
       });
       setIsOpen(false);
 
-      // Refresh page
-      window.location.reload();
+      // Refresh data without killing React
+      setTimeout(() => router.refresh(), 1000);
     } catch (error) {
       console.error("Error creating cliente:", error);
       toast.error("Error al crear cliente", { duration: 5000 });

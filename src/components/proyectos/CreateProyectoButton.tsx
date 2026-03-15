@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 
 export function CreateProyectoButton() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -33,9 +35,9 @@ export function CreateProyectoButton() {
         url_produccion: "",
       });
       setIsOpen(false);
-      
-      // Refresh page
-      window.location.reload();
+
+      // Refresh data without killing React
+      setTimeout(() => router.refresh(), 1000);
     } catch (error) {
       console.error("Error creating project:", error);
       toast.error("Error al crear proyecto", { duration: 5000 });
