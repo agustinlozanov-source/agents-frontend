@@ -34,26 +34,21 @@ export function ExecuteAgentModal({ isOpen, onClose, onSuccess }: ExecuteAgentMo
 
     const agentName = agentTypes.find(a => a.id === selectedAgent)?.name;
 
-    toast.promise(
-      api.executeAgent(selectedAgent, input),
-      {
-        loading: `Ejecutando agente ${agentName}...`,
-        success: () => {
-          setTimeout(() => {
-            setInput("");
-            setSelectedAgent("");
-            setResult(null);
-            onSuccess?.();
-            onClose();
-          }, 1000);
-          return `Agente ${agentName} está trabajando en ello`;
-        },
-        error: (err) => err?.message || "Error al ejecutar el agente",
-      }
-    );
-
     try {
-      await api.executeAgent(selectedAgent, input);
+      await toast.promise(
+        api.executeAgent(selectedAgent, input),
+        {
+          loading: `Ejecutando agente ${agentName}...`,
+          success: `Agente ${agentName} está trabajando en ello`,
+          error: (err) => err?.message || "Error al ejecutar el agente",
+        }
+      );
+
+      setInput("");
+      setSelectedAgent("");
+      setResult(null);
+      onSuccess?.();
+      onClose();
     } catch (_) {
       // handled by toast.promise
     } finally {
