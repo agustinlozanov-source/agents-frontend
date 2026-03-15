@@ -17,6 +17,7 @@ interface ProyectoCardProps {
 export function ProyectoCard({ proyecto }: ProyectoCardProps) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleted, setDeleted] = useState(false);
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -26,12 +27,15 @@ export function ProyectoCard({ proyecto }: ProyectoCardProps) {
     try {
       await api.deleteProyecto(proyecto.id);
       toast.success("Proyecto eliminado");
-      setTimeout(() => router.refresh(), 500);
+      setDeleted(true);
+      router.refresh();
     } catch {
       toast.error("Error al eliminar proyecto");
       setIsDeleting(false);
     }
   };
+
+  if (deleted) return null;
 
   return (
     <Link

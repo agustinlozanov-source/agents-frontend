@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { type Cliente } from "@/lib/supabase";
 import { Mail, Building, Phone, FolderKanban, Trash2, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 import { toast } from "sonner";
 
 interface ClienteCardProps {
@@ -16,6 +16,7 @@ interface ClienteCardProps {
 export function ClienteCard({ cliente, proyectosCount }: ClienteCardProps) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleted, setDeleted] = useState(false);
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -23,15 +24,17 @@ export function ClienteCard({ cliente, proyectosCount }: ClienteCardProps) {
     if (!confirm(`¿Eliminar al cliente "${cliente.nombre}"? Esta acción no se puede deshacer.`)) return;
     setIsDeleting(true);
     try {
-      const { error } = await supabase.from("clientes").delete().eq("id", cliente.id);
-      if (error) throw error;
+      await api.deleteCliente(cliente.id);
       toast.success("Cliente eliminado");
-      setTimeout(() => router.refresh(), 500);
+      setDeleted(true);
+      router.refresh();
     } catch {
       toast.error("Error al eliminar cliente");
       setIsDeleting(false);
     }
   };
+
+  if (deleted) return null;
 
   return (
     <div className="card hover:border-accent-primary dark:hover:border-accent-primary transition-all group">
