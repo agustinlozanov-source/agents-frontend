@@ -100,13 +100,11 @@ export const api = {
   async createCliente(data: Record<string, unknown>) {
     const { userId, tenantId } = await getUserContext();
     if (!userId) throw new Error('No autenticado');
-
-    const payload: Record<string, unknown> = { ...data, created_by: userId };
-    if (tenantId) payload.tenant_id = tenantId; // solo si tiene tenant asignado
+    if (!tenantId) throw new Error('Usuario sin tenant — ejecuta supabase-migration-tenants.sql en Supabase');
 
     const { data: cliente, error } = await supabase
       .from('clientes')
-      .insert(payload)
+      .insert({ ...data, tenant_id: tenantId, created_by: userId })
       .select()
       .single();
 
