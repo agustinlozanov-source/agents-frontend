@@ -13,7 +13,7 @@ async function getUserContext() {
         .from('tenant_users')
         .select('tenant_id')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle(); // maybeSingle() devuelve null en vez de 406 cuando no hay fila
       tenantId = data?.tenant_id || null;
     } catch {
       // tenant_users puede no existir todavía
@@ -100,11 +100,13 @@ export const api = {
   async createCliente(data: Record<string, unknown>) {
     const { userId, tenantId } = await getUserContext();
     if (!userId) throw new Error('No autenticado');
-    if (!tenantId) throw new Error('Usuario sin tenant asignado');
+
+    const payload: Record<string, unknown> = { ...data, created_by: userId };
+    if (tenantId) payload.tenant_id = tenantId; // solo si tiene tenant asignado
 
     const { data: cliente, error } = await supabase
       .from('clientes')
-      .insert({ ...data, tenant_id: tenantId, created_by: userId })
+      .insert(payload)
       .select()
       .single();
 
