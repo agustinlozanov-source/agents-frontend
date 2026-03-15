@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Rocket, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -12,12 +13,13 @@ interface DeployButtonProps {
 
 export function DeployButton({ proyectoId, tareaId, deployed }: DeployButtonProps) {
   const [isDeploying, setIsDeploying] = useState(false);
+  const router = useRouter();
 
   const handleDeploy = async () => {
     setIsDeploying(true);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/deploy`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_RAILWAY_API_URL}/api/deploy`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ proyecto_id: proyectoId, tarea_id: tareaId })
@@ -27,12 +29,10 @@ export function DeployButton({ proyectoId, tareaId, deployed }: DeployButtonProp
 
       if (data.success) {
         toast.success("Deploy completado", {
-          description: "El código se subió a GitHub exitosamente",
+          description: "El código se subió al VPS exitosamente",
           duration: 5000
         });
-        
-        // Refresh después de 2 segundos
-        setTimeout(() => window.location.reload(), 2000);
+        setTimeout(() => router.refresh(), 1000);
       } else {
         throw new Error(data.error || 'Error en deploy');
       }
