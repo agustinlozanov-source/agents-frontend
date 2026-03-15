@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X, Bot, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
+import { toast } from "sonner";
 
 interface ExecuteAgentModalProps {
   isOpen: boolean;
@@ -31,28 +32,30 @@ export function ExecuteAgentModal({ isOpen, onClose, onSuccess }: ExecuteAgentMo
     setIsExecuting(true);
     setResult(null);
 
+    const agentName = agentTypes.find(a => a.id === selectedAgent)?.name;
+
+    toast.promise(
+      api.executeAgent(selectedAgent, input),
+      {
+        loading: `Ejecutando agente ${agentName}...`,
+        success: () => {
+          setTimeout(() => {
+            setInput("");
+            setSelectedAgent("");
+            setResult(null);
+            onSuccess?.();
+            onClose();
+          }, 1000);
+          return `Agente ${agentName} está trabajando en ello`;
+        },
+        error: (err) => err?.message || "Error al ejecutar el agente",
+      }
+    );
+
     try {
-      const response = await api.executeAgent(selectedAgent, input);
-      
-      setResult({
-        success: true,
-        message: `Tarea enviada exitosamente. El agente ${agentTypes.find(a => a.id === selectedAgent)?.name} está trabajando en ello.`
-      });
-
-      // Reset form
-      setTimeout(() => {
-        setInput("");
-        setSelectedAgent("");
-        setResult(null);
-        onSuccess?.();
-        onClose();
-      }, 2000);
-
-    } catch (error: any) {
-      setResult({
-        success: false,
-        message: error.message || "Error al ejecutar el agente"
-      });
+      await api.executeAgent(selectedAgent, input);
+    } catch (_) {
+      // handled by toast.promise
     } finally {
       setIsExecuting(false);
     }

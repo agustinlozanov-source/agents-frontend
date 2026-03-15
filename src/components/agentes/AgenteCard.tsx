@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { type AgenteSkill } from "@/lib/supabase";
 import { api } from "@/lib/api";
 import { Edit2, Save, X, TrendingUp } from "lucide-react";
+import { toast } from "sonner";
 
 interface AgenteCardProps {
   agente: {
@@ -34,6 +35,7 @@ export function AgenteCard({ agente, skills, metrics }: AgenteCardProps) {
     setIsSaving(true);
     try {
       await api.updateAgentSkill(skills[0].id, editedPrompt);
+      toast.success("Prompt actualizado");
       setIsEditing(false);
       router.refresh();
     } catch (error) {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
+import { toast } from "sonner";
 
 export function CreateProyectoButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,7 +22,8 @@ export function CreateProyectoButton() {
 
     try {
       await api.createProyecto(formData);
-      
+      toast.success("Proyecto creado");
+
       // Reset y cerrar
       setFormData({
         nombre: "",
@@ -36,7 +38,7 @@ export function CreateProyectoButton() {
       window.location.reload();
     } catch (error) {
       console.error("Error creating project:", error);
-      alert("Error al crear proyecto");
+      toast.error("Error al crear proyecto");
     } finally {
       setIsSubmitting(false);
     }

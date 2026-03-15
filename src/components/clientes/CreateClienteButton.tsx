@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 export function CreateClienteButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,6 +25,7 @@ export function CreateClienteButton() {
         .insert(formData);
 
       if (error) throw error;
+      toast.success("Cliente creado");
 
       // Reset y cerrar
       setFormData({
@@ -38,7 +40,7 @@ export function CreateClienteButton() {
       window.location.reload();
     } catch (error) {
       console.error("Error creating cliente:", error);
-      alert("Error al crear cliente");
+      toast.error("Error al crear cliente");
     } finally {
       setIsSubmitting(false);
     }
