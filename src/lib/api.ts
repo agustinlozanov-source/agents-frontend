@@ -45,7 +45,23 @@ export const api = {
     });
     return res.json();
   },
+  async updateProyecto(id: string, data: any) {
+    const res = await fetch(`${API_URL}/api/proyectos/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Error actualizando proyecto");
+    return res.json();
+  },
 
+  async deleteProyecto(id: string) {
+    const res = await fetch(`${API_URL}/api/proyectos/${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Error eliminando proyecto");
+    return res.json();
+  },
   async updateAgentSkill(id: string, prompt: string) {
     const res = await fetch(`${API_URL}/api/agentes/skills/${id}`, {
       method: 'PUT',

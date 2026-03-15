@@ -16,6 +16,7 @@ export function CreateProyectoButton() {
     tipo: "landing" as "landing" | "app" | "ecommerce" | "custom",
     repo_github: "",
     url_produccion: "",
+    carpeta_vps: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,6 +34,7 @@ export function CreateProyectoButton() {
         tipo: "landing",
         repo_github: "",
         url_produccion: "",
+        carpeta_vps: "",
       });
       setIsOpen(false);
 
@@ -134,6 +136,20 @@ export function CreateProyectoButton() {
               onChange={(e) => setFormData({ ...formData, url_produccion: e.target.value })}
               className="input"
               placeholder="https://miproyecto.com"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-light-text-primary dark:text-dark-text-primary mb-2">
+              Carpeta en VPS
+              <span className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary ml-2">(para deploy)</span>
+            </label>
+            <input
+              type="text"
+              value={formData.carpeta_vps}
+              onChange={(e) => setFormData({ ...formData, carpeta_vps: e.target.value })}
+              className="input"
+              placeholder="mi-proyecto (se creará en /root/agente_ia/proyectos/)"
             />
           </div>
 
