@@ -12,6 +12,7 @@ import {
   Shield,
   Activity,
   LogOut,
+  MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
@@ -23,6 +24,7 @@ const navigation = [
   { name: "Agentes", href: "/agentes", icon: Bot },
   { name: "Organigrama", href: "/agentes/workflows", icon: Workflow },
   { name: "Actividad", href: "/actividad", icon: Activity },
+  { name: "Telegram", href: "/settings/telegram", icon: MessageCircle },
   { name: "Configuración", href: "/configuracion", icon: Settings },
 ];
 
