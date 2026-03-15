@@ -24,6 +24,7 @@ export type Proyecto = {
   id: string
   nombre: string
   cliente: string | null
+  cliente_id: string | null
   tipo: 'landing' | 'app' | 'ecommerce' | 'custom' | null
   status: 'idea' | 'investigacion' | 'desarrollo' | 'completado' | 'pausado'
   carpeta_vps: string | null
