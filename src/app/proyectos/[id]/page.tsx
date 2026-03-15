@@ -1,5 +1,7 @@
-import { supabase, type Proyecto, type AgenteTarea } from "@/lib/supabase";
+import { supabase, supabaseAdmin, type Proyecto, type AgenteTarea } from "@/lib/supabase";
 import { notFound } from "next/navigation";
+
+export const revalidate = 0;
 import { 
   ArrowLeft, 
   ExternalLink, 
@@ -25,7 +27,7 @@ async function getProyecto(id: string) {
     return null;
   }
 
-  const { data: tareas } = await supabase
+  const { data: tareas } = await supabaseAdmin
     .from("agente_tareas")
     .select("*")
     .eq("proyecto_id", id)
