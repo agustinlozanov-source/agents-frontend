@@ -7,6 +7,7 @@ import {
   FolderKanban,
   Users,
   Bot,
+  Workflow,
   Settings,
   Shield,
   Activity,
@@ -18,6 +19,7 @@ const navigation = [
   { name: "Proyectos", href: "/proyectos", icon: FolderKanban },
   { name: "Clientes", href: "/clientes", icon: Users },
   { name: "Agentes", href: "/agentes", icon: Bot },
+  { name: "Organigrama", href: "/agentes/workflows", icon: Workflow },
   { name: "Actividad", href: "/actividad", icon: Activity },
   { name: "Configuración", href: "/configuracion", icon: Settings },
 ];
@@ -43,7 +45,10 @@ export function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 flex flex-col items-center py-4 gap-1">
         {navigation.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            item.href === '/'
+              ? pathname === '/'
+              : pathname === item.href;
           return (
             <Link
               key={item.name}
