@@ -1,16 +1,38 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { type Proyecto } from "@/lib/supabase";
 import { statusLabels, tipoLabels } from "@/lib/utils";
 import { RelativeTime } from "@/components/RelativeTime";
-import { ExternalLink, Github, Folder } from "lucide-react";
+import { ExternalLink, Github, Folder, Trash2, Loader2 } from "lucide-react";
+import { api } from "@/lib/api";
+import { toast } from "sonner";
 
 interface ProyectoCardProps {
   proyecto: Proyecto;
 }
 
 export function ProyectoCard({ proyecto }: ProyectoCardProps) {
+  const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!confirm(`¿Eliminar "${proyecto.nombre}"? Esta acción no se puede deshacer.`)) return;
+    setIsDeleting(true);
+    try {
+      await api.deleteProyecto(proyecto.id);
+      toast.success("Proyecto eliminado");
+      setTimeout(() => router.refresh(), 500);
+    } catch {
+      toast.error("Error al eliminar proyecto");
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <Link
       href={`/proyectos/${proyecto.id}`}
@@ -28,13 +50,27 @@ export function ProyectoCard({ proyecto }: ProyectoCardProps) {
             </p>
           )}
         </div>
-        <span
-          className={`px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${
-            statusLabels[proyecto.status]?.color
-          }`}
-        >
-          {statusLabels[proyecto.status]?.label}
-        </span>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <span
+            className={`px-2 py-1 rounded text-xs font-medium ${
+              statusLabels[proyecto.status]?.color
+            }`}
+          >
+            {statusLabels[proyecto.status]?.label}
+          </span>
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-accent-error/10 text-light-text-tertiary hover:text-accent-error transition-all"
+            title="Eliminar proyecto"
+          >
+            {isDeleting ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="w-3.5 h-3.5" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Type */}

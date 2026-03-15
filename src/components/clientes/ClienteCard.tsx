@@ -1,6 +1,12 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { type Cliente } from "@/lib/supabase";
-import { Mail, Building, Phone, FolderKanban } from "lucide-react";
+import { Mail, Building, Phone, FolderKanban, Trash2, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 interface ClienteCardProps {
   cliente: Cliente;
@@ -8,6 +14,25 @@ interface ClienteCardProps {
 }
 
 export function ClienteCard({ cliente, proyectosCount }: ClienteCardProps) {
+  const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!confirm(`¿Eliminar al cliente "${cliente.nombre}"? Esta acción no se puede deshacer.`)) return;
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase.from("clientes").delete().eq("id", cliente.id);
+      if (error) throw error;
+      toast.success("Cliente eliminado");
+      setTimeout(() => router.refresh(), 500);
+    } catch {
+      toast.error("Error al eliminar cliente");
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="card hover:border-accent-primary dark:hover:border-accent-primary transition-all group">
       {/* Header */}
@@ -23,6 +48,18 @@ export function ClienteCard({ cliente, proyectosCount }: ClienteCardProps) {
             </p>
           )}
         </div>
+        <button
+          onClick={handleDelete}
+          disabled={isDeleting}
+          className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-accent-error/10 text-light-text-tertiary hover:text-accent-error transition-all"
+          title="Eliminar cliente"
+        >
+          {isDeleting ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Trash2 className="w-4 h-4" />
+          )}
+        </button>
       </div>
 
       {/* Contact Info */}
