@@ -1,6 +1,7 @@
 import { supabaseAdmin, type AgenteTarea } from "@/lib/supabase";
 import { Activity } from "lucide-react";
-import { agenteLabels, formatRelativeTime } from "@/lib/utils";
+import { agenteLabels } from "@/lib/utils";
+import { RelativeTime } from "@/components/RelativeTime";
 
 export const revalidate = 0;
 
@@ -64,9 +65,7 @@ export default async function ActividadPage() {
                   >
                     {tarea.status}
                   </span>
-                  <span className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary ml-auto">
-                    {formatRelativeTime(tarea.created_at)}
-                  </span>
+                  <RelativeTime date={tarea.created_at} className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary ml-auto" />
                 </div>
                 <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary mt-0.5 truncate">
                   {tarea.input}

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { type AgenteTarea } from "@/lib/supabase";
-import { agenteLabels, formatRelativeTime } from "@/lib/utils";
+import { agenteLabels } from "@/lib/utils";
+import { RelativeTime } from "@/components/RelativeTime";
 import { 
   ChevronDown, 
   ChevronUp, 
@@ -86,9 +87,7 @@ export function ProyectoTareas({ tareas, proyectoId }: ProyectoTareasProps) {
                       <Clock className="w-4 h-4 text-accent-warning animate-pulse" />
                     )}
                     
-                    <span className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
-                      {formatRelativeTime(tarea.created_at)}
-                    </span>
+                    <RelativeTime date={tarea.created_at} className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary" />
                   </div>
                   
                   <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary truncate">

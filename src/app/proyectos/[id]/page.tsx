@@ -12,7 +12,8 @@ import {
   User
 } from "lucide-react";
 import Link from "next/link";
-import { statusLabels, tipoLabels, formatDate, formatRelativeTime } from "@/lib/utils";
+import { statusLabels, tipoLabels, formatDate } from "@/lib/utils";
+import { RelativeTime } from "@/components/RelativeTime";
 import { ProyectoTareas } from "@/components/proyectos/ProyectoTareas";
 import { ProyectoActions } from "@/components/proyectos/ProyectoActions";
 
@@ -134,8 +135,8 @@ export default async function ProyectoDetailPage({
                 Última actividad
               </div>
               <div className="text-sm text-light-text-primary dark:text-dark-text-primary">
-                {tareas.length > 0 
-                  ? formatRelativeTime(tareas[0].created_at)
+                {tareas.length > 0
+                  ? <RelativeTime date={tareas[0].created_at} />
                   : "Sin actividad"}
               </div>
             </div>

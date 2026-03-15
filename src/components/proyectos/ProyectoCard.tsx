@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { type Proyecto } from "@/lib/supabase";
-import { statusLabels, tipoLabels, formatRelativeTime } from "@/lib/utils";
+import { statusLabels, tipoLabels } from "@/lib/utils";
+import { RelativeTime } from "@/components/RelativeTime";
 import { ExternalLink, Github, Folder } from "lucide-react";
 
 interface ProyectoCardProps {
@@ -77,7 +78,7 @@ export function ProyectoCard({ proyecto }: ProyectoCardProps) {
       {/* Footer */}
       <div className="pt-3 border-t border-light-border dark:border-dark-border">
         <p className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
-          Creado {formatRelativeTime(proyecto.created_at)}
+          Creado <RelativeTime date={proyecto.created_at} />
         </p>
       </div>
     </Link>

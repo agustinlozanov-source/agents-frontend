@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { type AgenteTarea } from "@/lib/supabase";
-import { agenteLabels, formatRelativeTime } from "@/lib/utils";
+import { agenteLabels } from "@/lib/utils";
 import { Activity } from "lucide-react";
+import { RelativeTime } from "@/components/RelativeTime";
 
 interface ActivityFeedProps {
   tareas: AgenteTarea[];
@@ -67,9 +68,7 @@ export function ActivityFeed({ tareas }: ActivityFeedProps) {
                     <span className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
                       •
                     </span>
-                    <span suppressHydrationWarning className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
-                      {formatRelativeTime(tarea.created_at)}
-                    </span>
+                    <RelativeTime date={tarea.created_at} className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary" />
                   </div>
                 </div>
               </>

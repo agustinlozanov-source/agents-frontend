@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { type Proyecto } from "@/lib/supabase";
-import { statusLabels, tipoLabels, formatRelativeTime } from "@/lib/utils";
+import { statusLabels, tipoLabels } from "@/lib/utils";
+import { RelativeTime } from "@/components/RelativeTime";
 import { ExternalLink, Folder } from "lucide-react";
 
 interface ProyectosListProps {
@@ -63,9 +64,7 @@ export function ProyectosList({ proyectos }: ProyectosListProps) {
                         {tipoLabels[proyecto.tipo]}
                       </span>
                     )}
-                    <span className="text-light-text-tertiary dark:text-dark-text-tertiary">
-                      {formatRelativeTime(proyecto.created_at)}
-                    </span>
+                    <RelativeTime date={proyecto.created_at} className="text-light-text-tertiary dark:text-dark-text-tertiary" />
                   </div>
                 </div>
 

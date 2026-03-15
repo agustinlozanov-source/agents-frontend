@@ -2,6 +2,7 @@ import { supabase, type AgenteSkill, type AgenteTarea } from "@/lib/supabase";
 import { Bot, Activity, CheckCircle, AlertCircle } from "lucide-react";
 import { AgenteCard } from "@/components/agentes/AgenteCard";
 import { AgentesMetrics } from "@/components/agentes/AgentesMetrics";
+import { RelativeTime } from "@/components/RelativeTime";
 
 const agenteTypes = [
   { id: "investigacion", name: "Investigación", icon: "🔍", color: "bg-blue-500" },
@@ -126,7 +127,7 @@ export default async function AgentesPage() {
                     {tarea.input}
                   </p>
                   <p className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary mt-1">
-                    {new Date(tarea.created_at).toLocaleString()}
+                    <RelativeTime date={tarea.created_at} />
                   </p>
                 </div>
               </div>
