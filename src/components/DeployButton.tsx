@@ -28,9 +28,12 @@ export function DeployButton({ proyectoId, tareaId, deployed }: DeployButtonProp
       const data = await response.json();
 
       if (data.success) {
+        const filesMsg = data.files?.length
+          ? `${data.files.length} archivo(s): ${data.files.join(', ')}`
+          : data.message;
         toast.success("Deploy completado", {
-          description: "El código se subió al VPS exitosamente",
-          duration: 5000
+          description: filesMsg,
+          duration: 6000
         });
         setTimeout(() => router.refresh(), 1000);
       } else {
