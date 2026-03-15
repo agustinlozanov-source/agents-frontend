@@ -1,9 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Cliente principal — maneja sesión via cookies automáticamente (auth-helpers)
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
 
 // Cliente admin con service key — solo usar en Server Components / API routes
 // Bypasea RLS, nunca exponer al cliente
@@ -15,7 +17,7 @@ export const supabaseAdmin = supabaseServiceKey
         persistSession: false,
       },
     })
-  : supabase // fallback a anon en caso de que no haya service key
+  : createClient(supabaseUrl, supabaseAnonKey) // fallback a anon
 
 // Tipos de la base de datos
 export type Proyecto = {

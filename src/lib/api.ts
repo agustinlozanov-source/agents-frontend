@@ -1,4 +1,27 @@
+import { supabase } from '@/lib/supabase';
+
 const API_URL = process.env.NEXT_PUBLIC_RAILWAY_API_URL || 'http://localhost:3001';
+
+async function getUserContext() {
+  const { data: { session } } = await supabase.auth.getSession();
+  const userId = session?.user?.id || null;
+
+  let tenantId: string | null = null;
+  if (userId) {
+    try {
+      const { data } = await supabase
+        .from('tenant_users')
+        .select('tenant_id')
+        .eq('user_id', userId)
+        .single();
+      tenantId = data?.tenant_id || null;
+    } catch {
+      // tenant_users puede no existir todavía
+    }
+  }
+
+  return { userId, tenantId };
+}
 
 export const api = {
   // VPS
@@ -18,10 +41,11 @@ export const api = {
 
   // Agentes
   async executeAgent(agente_tipo: string, input: string, proyecto_id?: string) {
+    const { userId, tenantId } = await getUserContext();
     const res = await fetch(`${API_URL}/api/agentes/execute`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ agente_tipo, input, proyecto_id })
+      body: JSON.stringify({ agente_tipo, input, proyecto_id, created_by: userId, tenant_id: tenantId })
     });
     return res.json();
   },
@@ -38,10 +62,11 @@ export const api = {
   },
 
   async createProyecto(data: any) {
+    const { userId, tenantId } = await getUserContext();
     const res = await fetch(`${API_URL}/api/proyectos`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: JSON.stringify({ ...data, created_by: userId, tenant_id: tenantId })
     });
     return res.json();
   },
