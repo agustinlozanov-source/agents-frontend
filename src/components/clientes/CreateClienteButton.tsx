@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Loader2 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 import { toast } from "sonner";
 
 export function CreateClienteButton() {
@@ -22,11 +22,7 @@ export function CreateClienteButton() {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
-        .from("clientes")
-        .insert(formData);
-
-      if (error) throw error;
+      await api.createCliente(formData);
       toast.success("Cliente creado", { duration: 5000 });
 
       // Reset y cerrar

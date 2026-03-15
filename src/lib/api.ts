@@ -94,5 +94,38 @@ export const api = {
       body: JSON.stringify({ prompt })
     });
     return res.json();
+  },
+
+  // Clientes (directo a Supabase)
+  async createCliente(data: Record<string, unknown>) {
+    const { userId, tenantId } = await getUserContext();
+    if (!userId) throw new Error('No autenticado');
+    if (!tenantId) throw new Error('Usuario sin tenant asignado');
+
+    const { data: cliente, error } = await supabase
+      .from('clientes')
+      .insert({ ...data, tenant_id: tenantId, created_by: userId })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return cliente;
+  },
+
+  async getClientes() {
+    const { data, error } = await supabase
+      .from('clientes')
+      .select('*, proyectos:proyectos(count)')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  },
+
+  async deleteCliente(id: string) {
+    const { error } = await supabase
+      .from('clientes')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
   }
 };
