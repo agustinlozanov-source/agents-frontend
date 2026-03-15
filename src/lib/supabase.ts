@@ -40,6 +40,7 @@ export type AgenteTarea = {
   status: 'pendiente' | 'procesando' | 'completado' | 'error'
   tiempo_ejecucion: string | null
   archivos_generados: string[] | null
+  metadata: Record<string, any> | null
   created_at: string
 }
 

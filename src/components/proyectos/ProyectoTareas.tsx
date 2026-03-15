@@ -12,6 +12,7 @@ import {
   FileText,
   Copy
 } from "lucide-react";
+import { DeployButton } from "@/components/DeployButton";
 
 interface ProyectoTareasProps {
   tareas: AgenteTarea[];
@@ -147,6 +148,13 @@ export function ProyectoTareas({ tareas, proyectoId }: ProyectoTareasProps) {
                       </div>
                     </div>
                   )}
+
+                  {/* Deploy */}
+                  <DeployButton
+                    proyectoId={proyectoId}
+                    tareaId={tarea.id}
+                    deployed={tarea.metadata?.deployed}
+                  />
 
                   {/* Archivos generados */}
                   {tarea.archivos_generados && Array.isArray(tarea.archivos_generados) && tarea.archivos_generados.length > 0 && (
