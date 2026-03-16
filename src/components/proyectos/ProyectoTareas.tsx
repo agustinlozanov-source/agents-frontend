@@ -54,7 +54,7 @@ export function ProyectoTareas({ tareas, proyectoId }: ProyectoTareasProps) {
 
       <div className="space-y-3">
         {tareas.map((tarea) => {
-          const agente = agenteLabels[tarea.agente_tipo];
+          const agente = agenteLabels[tarea.agente_tipo] ?? { label: tarea.agente_tipo, icon: "🤖" };
           const isExpanded = expandedId === tarea.id;
 
           return (

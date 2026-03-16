@@ -39,10 +39,29 @@ export const tipoLabels: Record<string, string> = {
 
 // Agente tipo labels
 export const agenteLabels: Record<string, { label: string; icon: string }> = {
+  // Legacy
   investigacion: { label: "Investigación", icon: "🔍" },
   programacion: { label: "Programación", icon: "💻" },
   automatizacion: { label: "Automatización", icon: "⚙️" },
   auditor: { label: "Auditor", icon: "📊" },
+  // C-Suite
+  ceo: { label: "CEO", icon: "🎯" },
+  cfo: { label: "CFO", icon: "💰" },
+  coo: { label: "COO", icon: "⚙️" },
+  cto: { label: "CTO", icon: "🔬" },
+  cmo: { label: "CMO", icon: "📢" },
+  // Líderes
+  lider_investigacion: { label: "Líder de Investigación", icon: "🔬" },
+  lider_innovacion: { label: "Líder de Innovación", icon: "💡" },
+  lider_data: { label: "Líder de Data", icon: "📈" },
+  lider_diseno: { label: "Líder de Diseño", icon: "🎨" },
+  lider_marketing_digital: { label: "Líder de Marketing Digital", icon: "📱" },
+  lider_infraestructura: { label: "Líder de Infraestructura", icon: "🏗️" },
+  lider_seguridad: { label: "Líder de Seguridad", icon: "🔒" },
+  lider_finanzas: { label: "Líder de Finanzas", icon: "💵" },
+  lider_qa: { label: "Líder de QA", icon: "🧪" },
+  lider_programacion: { label: "Líder de Programación", icon: "💻" },
+  lider_auditorias: { label: "Líder de Auditorías", icon: "📊" },
 }
 
 // Copiar al clipboard
