@@ -71,12 +71,23 @@ export const api = {
 
   async createProyecto(data: any) {
     const { userId, tenantId } = await getUserContext();
-    const res = await fetch(`${API_URL}/api/proyectos`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, created_by: userId, tenant_id: tenantId })
-    });
-    return res.json();
+
+    const payload = {
+      ...data,
+      tenant_id: tenantId,
+      created_by: userId,
+    };
+
+    console.log('Payload createProyecto:', payload); // DEBUG
+
+    const { data: proyecto, error } = await supabase
+      .from('proyectos')
+      .insert(payload)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return proyecto;
   },
   async updateProyecto(id: string, data: any) {
     const res = await fetch(`${API_URL}/api/proyectos/${id}`, {
