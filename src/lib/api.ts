@@ -2,25 +2,33 @@ import { supabase } from '@/lib/supabase';
 
 const API_URL = process.env.NEXT_PUBLIC_RAILWAY_API_URL || 'http://localhost:3001';
 
-async function getUserContext() {
+export async function getUserContext() {
   const { data: { session } } = await supabase.auth.getSession();
-  const userId = session?.user?.id || null;
 
-  let tenantId: string | null = null;
-  if (userId) {
-    try {
-      const { data } = await supabase
-        .from('tenant_users')
-        .select('tenant_id')
-        .eq('user_id', userId)
-        .maybeSingle(); // maybeSingle() devuelve null en vez de 406 cuando no hay fila
-      tenantId = data?.tenant_id || null;
-    } catch {
-      // tenant_users puede no existir todavía
-    }
+  console.log('Session:', session); // DEBUG
+
+  if (!session?.user) {
+    console.error('No hay usuario en sesión'); // DEBUG
+    throw new Error('No autenticado');
   }
 
-  return { userId, tenantId };
+  const { data: tenantUser, error } = await supabase
+    .from('tenant_users')
+    .select('tenant_id')
+    .eq('user_id', session.user.id)
+    .single();
+
+  console.log('TenantUser:', tenantUser, 'Error:', error); // DEBUG
+
+  if (error || !tenantUser) {
+    console.error('Usuario sin tenant asignado'); // DEBUG
+    throw new Error('Usuario sin tenant asignado');
+  }
+
+  return {
+    userId: session.user.id,
+    tenantId: tenantUser.tenant_id
+  };
 }
 
 export const api = {
